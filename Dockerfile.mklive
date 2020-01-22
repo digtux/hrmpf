@@ -1,0 +1,10 @@
+FROM digtux/hrmpf-base:master-b0de5c8d
+
+RUN xbps-install -Syu \
+      bash \
+      git \
+      make
+
+WORKDIR /work
+COPY . .
+RUN make && ./deps-mklive.sh

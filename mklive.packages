@@ -1,0 +1,13 @@
+base-files
+coreutils
+dash
+e2fsprogs
+gawk
+grub-i386-efi
+grub-x86_64-efi
+libgcc
+sed
+squashfs-tools
+syslinux
+tar
+xorriso
