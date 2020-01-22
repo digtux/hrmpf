@@ -1,0 +1,11 @@
+#PER: https://github.com/void-linux/void-mklive/blob/master/build-x86-images.sh.in
+#base
+cryptsetup
+dialog
+lvm2
+mdadm
+
+#grub
+grub-i386-efi
+grub-x86_64-efi
+
