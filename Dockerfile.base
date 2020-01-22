@@ -1,0 +1,36 @@
+FROM voidlinux/voidlinux
+
+WORKDIR /work
+RUN xbps-install -Syu
+RUN xbps-install -Sy bash make git
+RUN XBPS_ARCH=x86_64 \
+      xbps-install \
+      --repository=http://alpha.de.repo.voidlinux.org/current/nonfree \
+      --repository=http://alpha.de.repo.voidlinux.org/current \
+      --repository=http://alpha.derepo.voidlinux.org/current \
+      --repository=http://alpha.de.voidlinux.org/current/musl \
+      -c /work/xbps-cachedir-x86_64 -y --download-only \
+      base-files \
+      libgcc \
+      dash \
+      coreutils \
+      sed \
+      tar \
+      gawk \
+      syslinux \
+      grub-i386-efi \
+      grub-x86_64-efi \
+      squashfs-tools \
+      xorriso
+COPY . .
+
+RUN ./deps.sh
+
+RUN make ; mkdir /out
+
+
+          # --repository=http://alpha.de.repo.voidlinux.org/current/nonfree \
+          # --repository=http://alpha.de.repo.voidlinux.org/current \
+          # --repository=http://alpha.derepo.voidlinux.org/current \
+          # --repository=http://alpha.de.voidlinux.org/current/musl \
+          # -c /work/xbps-cachedir-x86_64 -y --download-only ; done

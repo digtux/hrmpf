@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+xbps-install -Sy
+
+for i in $(cat packages.list); do
+  echo "[*] Downloading: $i"
+  XBPS_ARCH=x86_64 \
+  xbps-install \
+   --repository=http://alpha.de.repo.voidlinux.org/current/nonfree \
+   --repository=http://alpha.de.repo.voidlinux.org/current \
+   --repository=http://alpha.derepo.voidlinux.org/current \
+   --repository=http://alpha.de.voidlinux.org/current/musl \
+   -c /work/xbps-cachedir-x86_64 -y --download-only $i 1>/dev/null || exit 11
+done

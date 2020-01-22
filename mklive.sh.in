@@ -418,6 +418,7 @@ LTSKERNELVERSION=$($XBPS_UHELPER_CMD getpkgversion ${_lts_kver})
 
 : ${OUTPUT_FILE="hrmpf-${BASE_ARCH}-${KERNELVERSION}-$(date +%Y%m%d).iso"}
 
+set -x
 print_step "Installing software to generate the image: ${REQUIRED_PKGS} ..."
 install_prereqs
 
