@@ -4,10 +4,10 @@ name: container
 steps:
 
 - name: publish
-  image: plugins/docker-base
+  image: plugins/docker # http://plugins.drone.io/drone-plugins/drone-docker/
   settings:
     dockerfile: path/to/Dockerfile.base
-    repo: "${CI_REPO}"
+    repo: "${CI_REPO}-base"
     tags:
     - '${DRONE_BRANCH/\//-}-${DRONE_COMMIT_SHA:0:8}'
     username: digtux
