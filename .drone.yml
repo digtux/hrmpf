@@ -6,7 +6,7 @@ steps:
 - name: publish
   image: plugins/docker # http://plugins.drone.io/drone-plugins/drone-docker/
   settings:
-    dockerfile: path/to/Dockerfile.base
+    dockerfile: Dockerfile.base
     repo: "${CI_REPO}-base"
     tags:
     - '${DRONE_BRANCH/\//-}-${DRONE_COMMIT_SHA:0:8}'
