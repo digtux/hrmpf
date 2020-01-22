@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 set -ex
 
+echo "[*] Installing build deps"
+xbps-install -S \
+ --repository=http://alpha.de.repo.voidlinux.org/current/nonfree \
+ --repository=http://alpha.de.repo.voidlinux.org/current \
+ --repository=http://alpha.derepo.voidlinux.org/current \
+ --repository=http://alpha.de.voidlinux.org/current/musl \
+ -c /work/xbps-cachedir-x86_64 -y $(grep -h '^[^#].' deps-build.packages)
+
+
 echo "[*] Downloading: packages into the build container"
 XBPS_ARCH=x86_64 \
 xbps-install -S \
