@@ -27,7 +27,8 @@ install: all
 	install -m644 isolinux/*.cfg* $(DESTDIR)$(SHAREDIR)/void-mklive
 
 clean:
-	-rm -f *.sh
+	rm -v build-arm-images.sh  build-rootfs.sh  build-x86-images.sh  deps.sh  installer.sh  mkimage.sh  mklive.sh  mkrootfs.sh
+
 
 dist:
 	@echo "Building distribution tarball for tag: v$(VERSION) ..."
