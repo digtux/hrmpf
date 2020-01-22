@@ -23,14 +23,5 @@ RUN XBPS_ARCH=x86_64 \
       squashfs-tools \
       xorriso
 COPY . .
-
+RUN make
 RUN ./deps.sh
-
-RUN make ; mkdir /out
-
-
-          # --repository=http://alpha.de.repo.voidlinux.org/current/nonfree \
-          # --repository=http://alpha.de.repo.voidlinux.org/current \
-          # --repository=http://alpha.derepo.voidlinux.org/current \
-          # --repository=http://alpha.de.voidlinux.org/current/musl \
-          # -c /work/xbps-cachedir-x86_64 -y --download-only ; done
