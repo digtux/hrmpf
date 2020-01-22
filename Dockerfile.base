@@ -7,6 +7,4 @@ RUN xbps-install -Syu \
 
 WORKDIR /work
 COPY . .
-RUN make \
-      && ./deps-base.sh \
-      && rm -rf /work/xbps-cachedir-x86_64
+RUN make && ./deps-base.sh
