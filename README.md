@@ -1,3 +1,6 @@
+[![Build Status](https://ci.digtux.com/api/badges/digtux/hrmpf/status.svg)](https://ci.digtux.com/digtux/hrmpf)
+
+
      _                    __ 
     | |_  _ _ _ __  _ __ / _|
     | ' \| '_| '  \| '_ \  _|
