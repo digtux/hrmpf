@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -ex
+
+echo "[*] Downloading+installing: BASE"
+XBPS_ARCH=x86_64 \
+xbps-install -S \
+ --repository=http://alpha.de.repo.voidlinux.org/current/nonfree \
+ --repository=http://alpha.de.repo.voidlinux.org/current \
+ -c /work/xbps-cachedir-x86_64 -y --download-only $(grep '^[^#].' packages.base)
