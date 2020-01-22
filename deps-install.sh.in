@@ -2,8 +2,8 @@
 
 set -e
 
-DESC="small and simple base packages"
-LIST=packages.base
+DESC="deps we'll want to install with mklive"
+LIST=install.packages
 
 echo "[*] ==================================================="
 echo "[*] ================= $LIST"
@@ -13,4 +13,5 @@ xbps-install -S \
   --repository=http://alpha.de.repo.voidlinux.org/current \
   -c /work/xbps-cachedir-x86_64 \
   $(grep -h '^[^#].' ${LIST}) \
+  --download-only \
   -y

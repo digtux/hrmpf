@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
 
 DESC="deps required to run mklive"
 LIST=mklive.packages
 
-echo "[*] Downloading+installing: mklive"
+echo "[*] ==================================================="
+echo "[*] ================= $LIST"
 XBPS_ARCH=x86_64 \
 xbps-install -S \
- --repository=http://alpha.de.repo.voidlinux.org/current/nonfree \
- --repository=http://alpha.de.repo.voidlinux.org/current \
- -c /work/xbps-cachedir-x86_64 \
- $(grep -h '^[^#].' ${LIST}) \
- -y
+  --repository=http://alpha.de.repo.voidlinux.org/current/nonfree \
+  --repository=http://alpha.de.repo.voidlinux.org/current \
+  -c /work/xbps-cachedir-x86_64 \
+  $(grep -h '^[^#].' ${LIST}) \
+  -y
