@@ -8,4 +8,4 @@ xbps-install -S \
  --repository=http://alpha.de.repo.voidlinux.org/current \
  --repository=http://alpha.derepo.voidlinux.org/current \
  --repository=http://alpha.de.voidlinux.org/current/musl \
- -c /work/xbps-cachedir-x86_64 -y --download-only $(grep '^[^#].' hrmpf.packages)
+ -c /work/xbps-cachedir-x86_64 -y --download-only $(grep -h '^[^#].' *.packages)

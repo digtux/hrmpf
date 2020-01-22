@@ -12,6 +12,6 @@
 	-B extra/ipxe.iso \
 	-B extra/memtest86+-5.01.iso \
 	-B extra/grub2.iso \
-	-p "$(grep -hn '^[^#].' *.packages)" \
+	-p "$(grep -h '^[^#].' hrmpf.packages)" \
 	-A "gawk tnftp inetutils-hostname libressl-netcat dash vim-common" \
 	-U "zfs"
