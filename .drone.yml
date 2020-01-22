@@ -21,5 +21,31 @@ trigger:
   event:
   - push
   - tag
-image_pull_secrets:
-- gcr-ro
+#image_pull_secrets:
+#- gcr-ro
+
+---
+kind: pipeline
+name: container
+steps:
+
+- name: publish
+  image: plugins/docker # http://plugins.drone.io/drone-plugins/drone-docker/
+  settings:
+    dockerfile: Dockerfile.mklive
+    repo: "${CI_REPO}-mklive"
+    tags:
+    - '${DRONE_BRANCH/\//-}-${DRONE_COMMIT_SHA:0:8}'
+    username: digtux
+    password:
+      from_secret: dockerhub-pass
+
+trigger:
+  branch:
+  - master
+  - feature/*
+  event:
+  - push
+  - tag
+#image_pull_secrets:
+#- gcr-ro
