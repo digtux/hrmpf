@@ -9,7 +9,7 @@
 
 **this is very alpha**
 
-`docker run --privileged=true -v ./out:/out -it digtux/hrmpf-install:master-XXXXX  ./mkhrmpf.sh`
+`docker run --privileged=true -v ./out:/out -it digtux/hrmpf-install:master-ee9e4d9a  ./mkhrmpf.sh`
 
 ## high level
 There are three Dockerfiles currently
