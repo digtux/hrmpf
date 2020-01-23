@@ -1,4 +1,4 @@
-FROM digtux/hrmpf-base:master-9c22f273
+FROM digtux/hrmpf-mklive:master-1cc7e015
 
 WORKDIR /work
 COPY . .
