@@ -279,6 +279,7 @@ generate_grub_efi_boot() {
 }
 
 generate_squashfs() {
+    set -e
     umount_pseudofs
 
     # Find out required size for the rootfs and create an ext3fs image off it.
@@ -287,13 +288,20 @@ generate_squashfs() {
         ROOTFS_FREESIZE="$((ROOTFS_SIZE/6))"
     fi
     mkdir -p "$BUILDDIR/tmp/LiveOS"
+    LOFS1_IMG=$BUILDDIR/tmp/LiveOS/ext3fs.img
     truncate -s "$((ROOTFS_SIZE+ROOTFS_FREESIZE))M" \
-	    $BUILDDIR/tmp/LiveOS/ext3fs.img >/dev/null 2>&1
+	    $LOFS1_IMG >/dev/null 2>&1
     mkdir -p "$BUILDDIR/tmp-rootfs"
-    mkfs.ext3 -F -m1 "$BUILDDIR/tmp/LiveOS/ext3fs.img" >/dev/null 2>&1
-    mount -o loop "$BUILDDIR/tmp/LiveOS/ext3fs.img" "$BUILDDIR/tmp-rootfs"
+    LOFS1_DEV=$(losetup --show --find $LOFS1_IMG)
+    if [ X$LOFS1_IMG == X ]; then
+        die "losetup failed to create a device for $LOFS1_IMG"
+    fi
+
+    mkfs.ext3 -F -m1 "$LOFS1_DEV" || die "ERROR making filesystem"
+    mount -o loop "$LOFS1_DEV" "$BUILDDIR/tmp-rootfs" || die "ERROR mounting rootfs"
     cp -a $ROOTFS/* $BUILDDIR/tmp-rootfs/
     umount -f "$BUILDDIR/tmp-rootfs"
+    losetup -d "$LOFS1_DEV"
     mkdir -p "$IMAGEDIR/LiveOS"
 
     $VOIDHOSTDIR/usr/bin/mksquashfs "$BUILDDIR/tmp" "$IMAGEDIR/LiveOS/squashfs.img" \
@@ -302,6 +310,7 @@ generate_squashfs() {
 
     # Remove rootfs and temporary dirs, we don't need them anymore.
     rm -rf "$ROOTFS" "$BUILDDIR/tmp-rootfs" "$BUILDDIR/tmp"
+    set +e
 }
 
 generate_iso_image() {
@@ -315,7 +324,7 @@ generate_iso_image() {
         -no-emul-boot -boot-load-size 4 -boot-info-table \
         -eltorito-alt-boot -e boot/grub/efiboot.img -isohybrid-gpt-basdat -no-emul-boot \
         -isohybrid-mbr $SYSLINUX_DATADIR/isohdpfx.bin \
-        -output "$CURDIR/$OUTPUT_FILE" "$IMAGEDIR" || die "Failed to generate ISO image"
+        -output "$OUTPUT_FILE" "$IMAGEDIR" || die "Failed to generate ISO image"
 }
 
 #
@@ -347,7 +356,7 @@ while getopts "a:A:B:b:r:c:C:T:Kk:l:i:I:s:S:o:p:U:h" opt; do
 done
 shift $((OPTIND - 1))
 
-XBPS_REPOSITORY="$XBPS_REPOSITORY --repository=http://alpha.derepo.voidlinux.org/current --repository=http://alpha.de.voidlinux.org/current/musl"
+XBPS_REPOSITORY="$XBPS_REPOSITORY"
 
 ARCH=$(xbps-uhelper arch)
 
@@ -452,5 +461,5 @@ generate_squashfs
 print_step "Generating ISO image..."
 generate_iso_image
 
-hsize=$(du -sh "$CURDIR/$OUTPUT_FILE"|awk '{print $1}')
-info_msg "Created $(readlink -f $CURDIR/$OUTPUT_FILE) ($hsize) successfully."
+hsize=$(du -sh "$OUTPUT_FILE"|awk '{print $1}')
+info_msg "Created $(readlink -f $OUTPUT_FILE) ($hsize) successfully."

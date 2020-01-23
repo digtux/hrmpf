@@ -1,11 +1,46 @@
 [![Build Status](https://ci.digtux.com/api/badges/digtux/hrmpf/status.svg)](https://ci.digtux.com/digtux/hrmpf)
 
 
-     _                    __ 
+
+
+
+
+# building void ISO in docker
+
+**this is very alpha**
+
+`docker run --privileged=true -v ./out:/out -it digtux/hrmpf-install:master-XXXXX  ./mkhrmpf.sh`
+
+## high level
+There are three Dockerfiles currently
+
+* `.base` to make a really simple one with bash basically
+* `.mklive` uses base to install the mklive deps (like squasfs, e2fsprogs etc)
+* `.install` to **WIP** to download all the packages we will install finally with `mkhrmpf.sh`
+
+
+## local reproduce
+
+```
+docker build -f ./Dockerfile.base    . -t base
+docker build -f ./Dockerfile.mklive  . -t mklive
+docker build -f ./Dockerfile.install . -t install
+docker run --privileged=true -v ./out:/out -it install ./mkhrmpf.sh
+```
+
+in theory u don't need any other image than base (or upstream `voidlinux/voidlinux`)
+....they're just there for a little cache and building in the cloud ATM
+
+
+
+
+```
+     _                    __
     | |_  _ _ _ __  _ __ / _|
     | ' \| '_| '  \| '_ \  _|
     |_||_|_| |_|_|_| .__/_|
-                   |_|       
+                   |_|
+```
 
 Welcome to the hrmpf rescue system, built on Void Linux.
 This project is based on void-mklive.

@@ -48,7 +48,7 @@ steps:
   image: plugins/docker # http://plugins.drone.io/drone-plugins/drone-docker/
   settings:
     dockerfile: Dockerfile.install
-    repo: "${CI_REPO}-mklive"
+    repo: "${CI_REPO}-install"
     tags:
     - '${DRONE_BRANCH/\//-}-${DRONE_COMMIT_SHA:0:8}'
     username: digtux
