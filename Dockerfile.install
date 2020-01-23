@@ -1,0 +1,5 @@
+FROM digtux/hrmpf-mklive:master-9b1d8bd7
+
+WORKDIR /work
+COPY . .
+RUN make && ./deps-install.sh

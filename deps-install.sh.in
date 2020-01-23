@@ -7,7 +7,10 @@ LIST=install.packages
 
 echo "[*] ==================================================="
 echo "[*] ================= $LIST"
-XBPS_ARCH=x86_64 \
+export XBPS_ARCH=x86_64
+
+xbps-install -Syu
+
 xbps-install -S \
   --repository=http://alpha.de.repo.voidlinux.org/current/nonfree \
   --repository=http://alpha.de.repo.voidlinux.org/current \
