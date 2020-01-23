@@ -1,34 +1,29 @@
----
-kind: pipeline
-name: base
-steps:
-
-- name: publish
-  image: plugins/docker # http://plugins.drone.io/drone-plugins/drone-docker/
-  settings:
-    dockerfile: Dockerfile.base
-    repo: "${CI_REPO}-base"
-    tags:
-    - '${DRONE_BRANCH/\//-}-${DRONE_COMMIT_SHA:0:8}'
-    username: digtux
-    password:
-      from_secret: dockerhub-pass
-
-trigger:
-  branch:
-  - master
-  - feature/*
-  event:
-  - push
-  - tag
-#image_pull_secrets:
-#- gcr-ro
+# ---
+# kind: pipeline
+# name: base
+# steps:
+# - name: publish
+#   image: plugins/docker # http://plugins.drone.io/drone-plugins/drone-docker/
+#   settings:
+#     dockerfile: Dockerfile.base
+#     repo: "${CI_REPO}-base"
+#     tags:
+#     - '${DRONE_BRANCH/\//-}-${DRONE_COMMIT_SHA:0:8}'
+#     username: digtux
+#     password:
+#       from_secret: dockerhub-pass
+# trigger:
+#   branch:
+#   - master
+#   - feature/*
+#   event:
+#   - push
+#   - tag
 
 ---
 kind: pipeline
 name: mklive
 steps:
-
 - name: publish
   image: plugins/docker # http://plugins.drone.io/drone-plugins/drone-docker/
   settings:
@@ -39,7 +34,6 @@ steps:
     username: digtux
     password:
       from_secret: dockerhub-pass
-
 trigger:
   branch:
   - master
@@ -47,5 +41,25 @@ trigger:
   event:
   - push
   - tag
-#image_pull_secrets:
-#- gcr-ro
+
+# ---
+# kind: pipeline
+# name: install
+# steps:
+# - name: publish
+#   image: plugins/docker # http://plugins.drone.io/drone-plugins/drone-docker/
+#   settings:
+#     dockerfile: Dockerfile.install
+#     repo: "${CI_REPO}-mklive"
+#     tags:
+#     - '${DRONE_BRANCH/\//-}-${DRONE_COMMIT_SHA:0:8}'
+#     username: digtux
+#     password:
+#       from_secret: dockerhub-pass
+# trigger:
+#   branch:
+#   - master
+#   - feature/*
+#   event:
+#   - push
+#   - tag
