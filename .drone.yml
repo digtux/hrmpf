@@ -40,7 +40,7 @@
 #  event:
 #  - push
 #  - tag
----
+#---
 kind: pipeline
 name: install
 steps:
