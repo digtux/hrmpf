@@ -25,7 +25,9 @@ There are three Dockerfiles currently
 docker build -f ./Dockerfile.base    . -t base
 docker build -f ./Dockerfile.mklive  . -t mklive
 docker build -f ./Dockerfile.install . -t install
-docker run --privileged=true -v ./out:/out -it install ./mkhrmpf.sh
+# make a dir to store the produced ISO image
+mkdir out
+docker run --privileged=true -v `pwd -P`/out:/out -it install ./mkhrmpf.sh
 ```
 
 in theory u don't need any other image than base (or upstream `voidlinux/voidlinux`)
