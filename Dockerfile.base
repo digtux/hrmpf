@@ -1,6 +1,7 @@
 FROM voidlinux/voidlinux
 
-RUN xbps-install -Syu \
+RUN xbps-install -Syu && \
+      xbps-install -Sy \
       bash \
       git \
       make
