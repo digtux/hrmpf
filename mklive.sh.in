@@ -159,6 +159,10 @@ install_packages() {
     else
         install -Dm755 /usr/sbin/void-installer $ROOTFS/usr/sbin/void-installer
     fi
+
+    cp -Rv /work/xbps-cachedir-x86_64 $ROOTFS/.
+    echo 'repository=/xbps-cachedir-x86_64' > $ROOTFS/etc/xbps.d/my-local-repo.conf
+
     # Cleanup and remove useless stuff.
     rm -rf $ROOTFS/var/cache/* $ROOTFS/run/* $ROOTFS/var/run/*
 }

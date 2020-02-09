@@ -41,7 +41,7 @@ try xbps-install -S
 try xbps-install -Suy xbps
 try xbps-install -y fzf
 
-DEVNAME="$(lsblk | grep disk | awk '{print $1}'| fzf)"
+DEVNAME="$(lsblk | grep disk | awk '{print $1}'| egrep -v "fd0" | fzf)"
 # Detect if we're in UEFI or legacy mode
 if [ -d /sys/firmware/efi ]; then
   export UEFI=1
@@ -252,8 +252,8 @@ createUser(){
 }
 
 
-LITE_PACKAGES="xorg-video-drivers xorg-minimal openbox lxdm"
-FULL_PACKAGES="${LITE_PACKAGES} firefox mpv"
+LITE_PACKAGES="xorg-video-drivers xorg-minimal openbox lxdm bluez xterm"
+FULL_PACKAGES="${LITE_PACKAGES} firefox mpv noto-fonts-ttf xorg-fonts setxkbmap dejavu-fonts-ttf font-misc-misc"
 
 declare -a services=(
   acpid
@@ -263,12 +263,16 @@ declare -a services=(
   dbus
   dcron
   dhcpcd
-  wpa_supplicant
   lxdm
+  wpa_supplicant 
 )
 
 PACKAGES_CHROOT=$FULL_PACKAGES
 # PACKAGES_CHROOT=$SERVER_PACKAGES
+
+## NOTE: NULL LiveCD
+cp -R /xbps-cachedir-x86_64 /mnt/.
+# echo 'repository=/xbps-cachedir-x86_64' > /mnt/etc/xbps.d/my-local-repo.conf
 
 try cp /etc/resolv.conf /mnt/etc/resolv.conf
 try chroot /mnt xbps-install -Syu
@@ -277,9 +281,9 @@ try chroot /mnt xbps-install -Syu
 for pkg in ${PACKAGES_CHROOT} ; do
   echo
   echo "Installing package: ${pkg}"
-  try chroot /mnt xbps-install -y -c /tmp/pkg-cache ${pkg}
+  try chroot /mnt xbps-install -y -c /xbps-cachedir-x86_64 ${pkg}
 done
-try rm /mnt/tmp/pkg-cache/*
+try rm -rf /mnt/tmp/pkg-cache/* /mnt/etc/xbps.d/my-local-repo.conf /mnt/xbps-cachedir-x86_64
 
 set +e
 for svc in ${services[@]}; do

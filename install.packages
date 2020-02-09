@@ -23,8 +23,7 @@ intel-ucode
 setxkbmap
 terminus-font
 xauth
-xorg-input-drivers
-xorg-minimal
+xorg-input-drivers xorg-minimal
 xorg-video-drivers
 
 #Desktop
@@ -43,7 +42,7 @@ arandr
 git
 
 #Gnome
-firefox-esr
+firefox
 
 ## base stuff
 acpid

@@ -45,3 +45,11 @@ To test an ISO:
 `qemu-kvm -cdrom out/something.iso -smp 2 -cpu host -drive format=qcow2,file=disk.img -m 4G`
 
 
+## quickly updating contents on CD
+
+1. docker build the `install` image to ensure all deps are in a container locally called `install`
+`docker build -f ./Dockerfile.install . -t install`
+2. copy the contents of this repo into an image called `final`
+`docker build -f ./Dockerfile.install . -t install`
+3. create a new ISO using the `final` docker image (this takes about 3minutes)
+`docker run --privileged=true -v `pwd -P`/out:/out -it final ./mkhrmpf.sh`
