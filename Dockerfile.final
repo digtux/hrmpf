@@ -3,14 +3,3 @@ FROM install
 WORKDIR /work
 COPY . .
 RUN make clean ; make
-
-RUN xbps-install -Syu
-
-RUN xbps-install -S \
-  --repository=http://alpha.de.repo.voidlinux.org/current/nonfree \
-  --repository=http://alpha.de.repo.voidlinux.org/current \
-  -c /work/xbps-cachedir-x86_64 \
-  $(grep -h '^[^#].' install.packages) \
-  --download-only \
-  -y
-

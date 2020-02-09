@@ -99,7 +99,7 @@ else
     BOOTPART="1"
     DEVPART="2"
   fi
-  try mkfs.vfat /dev/${DEVPART}
+  try mkfs.vfat /dev/${DEVNAME}${DEVPART}
   try mkfs.ext4 -m 0 -L boot /dev/${DEVNAME}${BOOTPART}
 fi
 
@@ -252,11 +252,8 @@ createUser(){
 }
 
 
-#wireguard
-
-SERVER_PACKAGES="iwd nano git jq zsh fish-shell bluez nftables dcron autofs cifs-utils"
-LITE_PACKAGES="${SERVER_PACKAGES} noto-fonts-ttf xorg-fonts xorg-minimal xf86-video-fbdev lumina qterminal qsudo compton hicolor-icon-theme trident-icons xrandr qt5-svg wpa-cute libdvdcss gutenprint ntfs-3g fuse-exfat simple-mtpfs pulseaudio pavucontrol gst-libav sddm"
-FULL_PACKAGES="${LITE_PACKAGES} telegram-desktop vlc firefox trojita pianobar libreoffice"
+LITE_PACKAGES="xorg-video-drivers xorg-minimal openbox lxdm"
+FULL_PACKAGES="${LITE_PACKAGES} firefox mpv"
 
 declare -a services=(
   acpid
@@ -266,10 +263,8 @@ declare -a services=(
   dbus
   dcron
   dhcpcd
-  nftables
-  openntpd
-  sddm
   wpa_supplicant
+  lxdm
 )
 
 PACKAGES_CHROOT=$FULL_PACKAGES
@@ -289,7 +284,8 @@ try rm /mnt/tmp/pkg-cache/*
 set +e
 for svc in ${services[@]}; do
   if [ ! -e "${MNT}/etc/sv/${svc}" ] ; then continue ; fi
-  chroot /mnt ln -s /etc/sv/${svc} /var/service/${svc}/
+  ln -sf /etc/sv/${svc} /mnt/etc/runit/runsvdir/default/
+  # chroot /mnt ln -s /etc/sv/${svc} /var/service/${svc}/
 done
 set -e
 

@@ -18,9 +18,10 @@ USERSHELL=$(getarg live.shell)
 echo "USERNAME=$USERNAME" >> ${NEWROOT}/etc/default/live.conf
 chmod 644 ${NEWROOT}/etc/default/live.conf
 
-if ! grep -q ${USERSHELL} ${NEWROOT}/etc/shells ; then
-    echo ${USERSHELL} >> ${NEWROOT}/etc/shells
-fi
+# no grep in initrd..
+# if ! grep -q ${USERSHELL} ${NEWROOT}/etc/shells ; then
+#     echo ${USERSHELL} >> ${NEWROOT}/etc/shells
+# fi
 
 # Create new user and remove password. We'll use autologin by default.
 chroot ${NEWROOT} useradd -m -c $USERNAME -G audio,video,wheel -s $USERSHELL $USERNAME
