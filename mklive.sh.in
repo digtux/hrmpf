@@ -86,7 +86,7 @@ directory if unset).
  -K                 Do not remove builddir.
  -B <file>          Add file to /boot
 
-The $PROGNAME script generates a live image of the Void Linux distribution.
+The $PROGNAME script generates a live image of the NullOS Linux distribution.
 This ISO image can be written to a CD/DVD-ROM or any USB stick.
 _EOF
     exit 1
@@ -145,6 +145,14 @@ install_packages() {
         XBPS_ARCH=$BASE_ARCH ${XBPS_INSTALL_CMD} -r $ROOTFS \
             $XBPS_REPOSITORY $XBPS_CACHEDIR -y -U ${UNCONF_PACKAGE_LIST}
     fi
+
+    if [ -x null-installer.sh ]; then
+        install -Dm755 null-installer.sh $ROOTFS/usr/sbin/null-installer
+    fi
+
+    if [ -x xb ]; then
+        install -Dm755 xb $ROOTFS/usr/sbin/xb
+    fi  
 
     if [ -x installer.sh ]; then
         install -Dm755 installer.sh $ROOTFS/usr/sbin/void-installer
@@ -206,7 +214,14 @@ generate_isolinux_boot() {
     cp -f $SYSLINUX_DATADIR/libgpl.c32 "$ISOLINUX_DIR"
     cp -f $SYSLINUX_DATADIR/chain.c32 "$ISOLINUX_DIR"
     cp -f $SYSLINUX_DATADIR/memdisk "$ISOLINUX_DIR"
-    cp -f /usr/share/hwdata/pci.ids "$ISOLINUX_DIR"
+
+    # + cp -f /work/tmp.vdmlYsVcIk/void-host/usr/lib/syslinux/memdisk /work/tmp.vdmlYsVcIk/image/boot/isolinux
+    # + cp -f /usr/share/hwdata/pci.ids /work/tmp.vdmlYsVcIk/image/boot/isolinux
+    # cp: cannot stat '/usr/share/hwdata/pci.ids': No such file or directory
+    # + cp -f isolinux/isolinux.cfg.in /work/tmp.vdmlYsVcIk/image/boot/isolinux/isolinux.cfg
+    # + cp -f data/splash.png /work/tmp.vdmlYsVcIk/image/boot/isolinux
+    # TODO: pci.ids ?
+    # cp -f /usr/share/hwdata/pci.ids "$ISOLINUX_DIR"
     cp -f isolinux/isolinux.cfg.in "$ISOLINUX_DIR"/isolinux.cfg
     cp -f ${SPLASH_IMAGE} "$ISOLINUX_DIR"
 
@@ -235,7 +250,7 @@ generate_grub_efi_boot() {
     mkdir -p $GRUB_DIR/fonts
     cp -f $GRUB_DATADIR/unicode.pf2 $GRUB_DIR/fonts
 
-    modprobe -q loop || :
+    # modprobe -q loop || :
 
     # Create EFI vfat image.
     truncate -s 16M $GRUB_DIR/efiboot.img >/dev/null 2>&1
@@ -243,6 +258,7 @@ generate_grub_efi_boot() {
 
     GRUB_EFI_TMPDIR="$(mktemp --tmpdir=$HOME -d)"
     LOOP_DEVICE="$(losetup --show --find ${GRUB_DIR}/efiboot.img)"
+    sync ; sleep 1
     mount -o rw,flush -t vfat "${LOOP_DEVICE}" "${GRUB_EFI_TMPDIR}" >/dev/null 2>&1
 
     cp -a $IMAGEDIR/boot $VOIDHOSTDIR
@@ -293,9 +309,7 @@ generate_squashfs() {
 	    $LOFS1_IMG >/dev/null 2>&1
     mkdir -p "$BUILDDIR/tmp-rootfs"
     LOFS1_DEV=$(losetup --show --find $LOFS1_IMG)
-    if [ X$LOFS1_IMG == X ]; then
-        die "losetup failed to create a device for $LOFS1_IMG"
-    fi
+    sync ; sleep 1
 
     mkfs.ext3 -F -m1 "$LOFS1_DEV" || die "ERROR making filesystem"
     mount -o loop "$LOFS1_DEV" "$BUILDDIR/tmp-rootfs" || die "ERROR mounting rootfs"
@@ -369,7 +383,7 @@ ARCH=$(xbps-uhelper arch)
 : ${INITRAMFS_COMPRESSION:=xz}
 : ${SQUASHFS_COMPRESSION:=xz}
 : ${BASE_SYSTEM_PKG:=base-system}
-: ${BOOT_TITLE:="Void Linux"}
+: ${BOOT_TITLE:="NullOS"}
 
 # Required packages in the image for a working system.
 PACKAGE_LIST="$BASE_SYSTEM_PKG $PACKAGE_LIST"
@@ -381,7 +395,7 @@ fi
 
 readonly CURDIR="$PWD"
 
-ISO_VOLUME="VOID_LIVE"
+ISO_VOLUME="NULLOS"
 if [ -n "$ROOTDIR" ]; then
     BUILDDIR=$(mktemp --tmpdir="$ROOTDIR" -d)
 else

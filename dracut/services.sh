@@ -11,6 +11,6 @@ for f in ${SERVICES}; do
         ln -sf /etc/sv/$f $NEWROOT/etc/runit/runsvdir/default/
 done
 
-for f in acpid dhcpcd gpm sshd udevd; do
+for f in acpid dhcpcd gpm sshd udevd polkitd; do
         ln -sf /etc/sv/$f $NEWROOT/etc/runit/runsvdir/default/
 done

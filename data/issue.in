@@ -1,14 +1,15 @@
- _                    __ 
-| |_  _ _ _ __  _ __ / _|
-| ' \\| '_| '  \\| '_ \\  _|
-|_||_|_| |_|_|_| .__/_|    @@VERSION@@
-               |_|       
+ 
+  _   _       _ _  ___  ____  
+| \ | |_   _| | |/ _ \/ ___| 
+|  \| | | | | | | | | \___ \ 
+| |\  | |_| | | | |_| |___) |
+|_| \_|\__,_|_|_|\___/|____/    @@VERSION@@
 
-Welcome to the hrmpf rescue system, built on Void Linux.
+Welcome to NullOS, built on Void Linux.
 There are two accounts:
 
-	- root:voidlinux
-	- anon:voidlinux
+	- root:null
+	- anon:null
 
 The `anon` user additionally has `sudo(8)` permissions to run any command
 without a password.
