@@ -53,3 +53,7 @@ To test an ISO:
 `docker build -f ./Dockerfile.install . -t install`
 3. create a new ISO using the `final` docker image (this takes about 3minutes)
 `docker run --privileged=true -v `pwd -P`/out:/out -it final ./mkhrmpf.sh`
+
+## Tips
+
+forward :2222 on localhost to qemu guest by adding `-net user,hostfwd=tcp::2222-:22 -net nic`

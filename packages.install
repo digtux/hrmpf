@@ -1,58 +1,30 @@
-#PER: https://github.com/void-linux/void-mklive/blob/master/build-x86-images.sh.in
-#base
-cryptsetup
-dialog
-lvm2
-mdadm
-parted
-
-
-
-
-curl
-
-#grub
-grub-i386-efi
-grub-x86_64-efi
-
-#X
-alsa-plugins-pulseaudio
-dejavu-fonts-ttf
-font-misc-misc
-intel-ucode
-setxkbmap
-terminus-font
-xauth
-xorg-input-drivers xorg-minimal
-xorg-video-drivers
-
-#Desktop
-
-lxdm
-openbox
-xfce4
-gdm
-#cinnamon
-#lxde
-
-fzf
-
-tilix
-arandr
-git
-
-#Gnome
-firefox
-
-## base stuff
+# alsa-plugins-pulseaudio
+# btrfs-progs
+# font-misc-misc
+# gdm
+# gnome
+# intel-ucode
+# mpv
+# mpv
+# noto-fonts-ttf
+# socklog-void
+# terminus-font
+# tilix
+# xauth
 acpid
+arandr
 base-system
 bash
 binutils
 binutils-doc
-btrfs-progs
+bluez
 cpio
+cryptsetup
+cups
+curl
+dejavu-fonts-ttf
 dhcpcd
+dialog
 diffutils
 dnssec-anchors
 dracut
@@ -61,8 +33,14 @@ ethtool
 eudev
 f2fs-tools
 findutils
+firefox
+font-misc-misc
+fzf
+git
 glibc-locales
 grep
+grub-i386-efi
+grub-x86_64-efi
 gzip
 iana-etc
 iputils
@@ -84,24 +62,40 @@ linux-firmware-intel
 linux-firmware-network
 linux-firmware-nvidia
 linux5.4
+lvm2
+lxde
+lxdm
 man-pages
+mdadm
 mdocml
 ncurses
 ncurses-base
 nvi
+openbox
 openssh
+parted
 procps-ng
 psmisc
-runit
-runit-void
+# runit
+# runit-void
+setxkbmap
 shadow
 sudo
 traceroute
 tzdata
 util-linux
+vim
 void-artwork
 which
 wifi-firmware
-xfsprogs
+xfce4-terminal
+# xfsprogs
+xorg-fonts
+xorg-input-drivers
+xorg-minimal
+xorg-video-drivers
+xterm
 xz
 zd1211-firmware
+NetworkManager
+network-manager-applet

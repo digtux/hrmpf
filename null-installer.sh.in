@@ -18,6 +18,10 @@ yell() { echo "$0: $*" >&2; }
 die() { echo -e "\e[31m--- $*\e[0m"; exit 1; }
 try() { echo -e "\e[32m==> $@\e[0m"; $@ || die "cannot $*"; }
 
+
+export REPO=https://alpha.de.repo.voidlinux.org/current
+export XBPS_INSTALL_CMD="xbps-install -y -R /xbps-cachedir-x86_64"
+
 export FZF_DEFAULT_OPTS="--layout=reverse --inline-info"
 
 declare -A LV
@@ -28,7 +32,7 @@ KEYMAP="en_US"
 TIMEZONE="UTC"
 LANG="en_US.UTF-8"
 DEVNAME="$1"
-VGNAME="vgpool"
+VGNAME="vg0"
 CRYPTSETUP_OPTS=""
 SWAP=0
 SWAPSIZE="2G"
@@ -37,9 +41,10 @@ LV[var]="5G"
 LV[home]="512M"
 
 
-try xbps-install -S
-try xbps-install -Suy xbps
-try xbps-install -y fzf
+# try xbps-install -S
+# try xbps-install -Suy xbps
+# try xbps-install -y fzf
+# try xbps-install -c /xbps-cachedir-x86_64 fzf
 
 DEVNAME="$(lsblk | grep disk | awk '{print $1}'| egrep -v "fd0" | fzf)"
 # Detect if we're in UEFI or legacy mode
@@ -53,9 +58,12 @@ CPU_VENDOR=$(grep vendor_id /proc/cpuinfo | awk '{print $3}')
 if grep -q "GenuineIntel" <<<"${CPU_VENDOR}" ;  then
   PKG_LIST="$PKG_LIST linux-firmware-intel"
 fi
+if grep -q "AuthenticAMD" <<<"${CPU_VENDOR}" ;  then
+  PKG_LIST="$PKG_LIST linux-firmware-amd"
+fi
 
 # Install requirements
-xbps-install -y -S -f cryptsetup parted lvm2
+# xbps-install -y -S -f cryptsetup parted lvm2
 
 #partitions on NVME will have a slightly different looking name
 if grep -q nvme <<<"${DEVNAME}"; then
@@ -159,8 +167,8 @@ done
 try mkdir -p /mnt/var/db/xbps/keys/
 try cp -a /var/db/xbps/keys/* /mnt/var/db/xbps/keys/
 
-REPO=https://alpha.de.repo.voidlinux.org/current
-try xbps-install -y -S -R ${REPO} -r /mnt $PKG_LIST
+# try xbps-install -y -c /xbps-cachedir-x86_64 -S -R ${REPO} -r /mnt $PKG_LIST
+  try ${XBPS_INSTALL_CMD} -r /mnt $PKG_LIST
 
 # Do a bit of customization
 echo "[!] Setting root password"
@@ -205,7 +213,7 @@ EOF
 try sed -i 's+#GRUB_BACKGROUND+GRUB_BACKGROUND+g' /mnt/etc/default/grub
 if [ $UEFI ]; then
   #TODO: try always fails on this for some reason...
-  chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id='Void Linux [GRUB]'
+  chroot /mnt grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id='Null Linux [GRUB]'
 else
   try chroot /mnt grub-install /dev/${DEVNAME}
 fi
@@ -226,6 +234,8 @@ try cat /mnt/etc/default/grub
 try chroot /mnt grub-mkconfig -o /boot/grub/grub.cfg
 try chroot /mnt xbps-reconfigure -f ${KERNEL_VER}
 
+try cp /usr/sbin/xb /mnt/usr/sbin/xb
+try cp /usr/share/bash-completion/completions/xb /mnt/usr/share/bash-completion/completions/xb
 
 
 createUser(){
@@ -251,61 +261,109 @@ createUser(){
   echo "%wheel	ALL=(ALL)	NOPASSWD: ALL" >> /mnt/etc/sudoers
 }
 
+declare -a PACKAGES=(
+  curl
+  xterm
+  bluez
+  xorg-video-drivers
+  xorg-minimal 
+  socklog-void
 
-LITE_PACKAGES="xorg-video-drivers xorg-minimal openbox lxdm bluez xterm"
-FULL_PACKAGES="${LITE_PACKAGES} firefox mpv noto-fonts-ttf xorg-fonts setxkbmap dejavu-fonts-ttf font-misc-misc"
+  openbox
+  gdm
+  gnome
+  gnome-session
+  cups
 
-declare -a services=(
+  # LXDE
+  lxdm
+  lxde
+
+  arandr
+  tilix
+  firefox
+  mpv
+  noto-fonts-ttf
+  xorg-fonts
+  setxkbmap 
+  dejavu-fonts-ttf
+  font-misc-misc
+)
+
+declare -a services_enable=(
+  # standard
   acpid
   autofs
+  sshd
+
+  # standard addons
+  socklog-unix
+  nanoklogd
+
+  # gnome stuff
+  NetworkManager
+  avahi-daemon
   bluetoothd
   cupsd
   dbus
-  dcron
-  dhcpcd
-  lxdm
-  wpa_supplicant 
+  # gdm
+
+  # dcron
+  
+  # wpa_supplicant 
+
 )
 
-PACKAGES_CHROOT=$FULL_PACKAGES
-# PACKAGES_CHROOT=$SERVER_PACKAGES
+declare -a services_disable=(
+  dhcpcd
+  wpa_supplicant
+)
+
 
 ## NOTE: NULL LiveCD
 cp -R /xbps-cachedir-x86_64 /mnt/.
 # echo 'repository=/xbps-cachedir-x86_64' > /mnt/etc/xbps.d/my-local-repo.conf
 
-try cp /etc/resolv.conf /mnt/etc/resolv.conf
-try chroot /mnt xbps-install -Syu
+try printf "nameserver 8.8.4.4\nnameserver 1.1.1.1\n" > /mnt/etc/resolv.conf
 
-# Required packages
-for pkg in ${PACKAGES_CHROOT} ; do
-  echo
-  echo "Installing package: ${pkg}"
-  try chroot /mnt xbps-install -y -c /xbps-cachedir-x86_64 ${pkg}
+## TODO: make this conditional (if internet connection == True)
+# try chroot /mnt xbps-install -Syu
+
+for pkg in ${PACKAGES[@]} ; do
+  yell "Installing package: ${pkg}"
+  # TODO don't use cache if we have internet
+  # try chroot /mnt xbps-install -y -c /xbps-cachedir-x86_64 ${pkg}
+  try chroot /mnt ${XBPS_INSTALL_CMD} ${pkg}
 done
 try rm -rf /mnt/tmp/pkg-cache/* /mnt/etc/xbps.d/my-local-repo.conf /mnt/xbps-cachedir-x86_64
 
 set +e
-for svc in ${services[@]}; do
-  if [ ! -e "${MNT}/etc/sv/${svc}" ] ; then continue ; fi
+for svc in ${services_enable[@]}; do
+  # if [ ! -e "${MNT}/etc/sv/${svc}" ] ; then continue ; fi
   ln -sf /etc/sv/${svc} /mnt/etc/runit/runsvdir/default/
   # chroot /mnt ln -s /etc/sv/${svc} /var/service/${svc}/
+done
+set -e
+
+set +e
+for svc in ${services_disable[@]}; do
+  rm /mnt/etc/runit/runsvdir/default/${svc}
 done
 set -e
 
 set -x
 createUser
 
-# Now add customization to installation
-echo "[!] Running custom scripts"
-if [ -d ./custom ]; then
-  cp -r ./custom /mnt/tmp
+# # Now add customization to installation
+# yell "custom scripts"
+# if [ -d ./custom ]; then
+#   cp -r ./custom /mnt/tmp
 
-  # If we detect any .sh let's run them in the chroot
-  for SHFILE in /mnt/tmp/custom/*.sh; do
-    try chroot /mnt sh /tmp/custom/$(basename $SHFILE)
-  done
+#   # If we detect any .sh let's run them in the chroot
+#   for SHFILE in /mnt/tmp/custom/*.sh; do
+#     try chroot /mnt sh /tmp/custom/$(basename $SHFILE)
+#   done
 
-  # Then cleanup chroot
-  rm -rf /mnt/tmp/custom
-fi
+#   # Then cleanup chroot
+#   rm -rf /mnt/tmp/custom
+# fi

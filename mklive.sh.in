@@ -150,9 +150,8 @@ install_packages() {
         install -Dm755 null-installer.sh $ROOTFS/usr/sbin/null-installer
     fi
 
-    if [ -x xb ]; then
-        install -Dm755 xb $ROOTFS/usr/sbin/xb
-    fi  
+    install -Dm755 xb $ROOTFS/usr/sbin/xb
+    install -Dm644 xb-comp $ROOTFS/usr/share/bash-completion/completions/xb
 
     if [ -x installer.sh ]; then
         install -Dm755 installer.sh $ROOTFS/usr/sbin/void-installer
@@ -160,8 +159,22 @@ install_packages() {
         install -Dm755 /usr/sbin/void-installer $ROOTFS/usr/sbin/void-installer
     fi
 
+    rm $ROOTFS/etc/runit/runsvdir/default/dhcpd
+    ln -sf /etc/sv/NetworkManager $ROOTFS/etc/runit/runsvdir/default/
+    ln -sf /etc/sv/avahi-daemon   $ROOTFS/etc/runit/runsvdir/default/
+    ln -sf /etc/sv/bluetoothd     $ROOTFS/etc/runit/runsvdir/default/
+    ln -sf /etc/sv/cupsd          $ROOTFS/etc/runit/runsvdir/default/
+    ln -sf /etc/sv/elogind        $ROOTFS/etc/runit/runsvdir/default/
+    # ln -sf /etc/sv/gdm            $ROOTFS/etc/runit/runsvdir/default/
+	ln -sf /etc/sv/dbus           $ROOTFS/etc/runit/runsvdir/default/
+	ln -sf /etc/sv/socklog-unix   $ROOTFS/etc/runit/runsvdir/default/
+    ln -sf /etc/sv/nanoklogd      $ROOTFS/etc/runit/runsvdir/default/
+
     cp -Rv /work/xbps-cachedir-x86_64 $ROOTFS/.
     echo 'repository=/xbps-cachedir-x86_64' > $ROOTFS/etc/xbps.d/my-local-repo.conf
+
+    # index the downloaded packages
+    chroot $ROOTFS find /xbps-cachedir-x86_64/ -type f -name "*.xbps" -exec xbps-rindex -a {} +
 
     # Cleanup and remove useless stuff.
     rm -rf $ROOTFS/var/cache/* $ROOTFS/run/* $ROOTFS/var/run/*
@@ -445,7 +458,7 @@ LTSKERNELVERSION=$($XBPS_UHELPER_CMD getpkgversion ${_lts_kver})
 
 : ${OUTPUT_FILE="hrmpf-${BASE_ARCH}-${KERNELVERSION}-$(date +%Y%m%d).iso"}
 
-set -x
+# set -x
 print_step "Installing software to generate the image: ${REQUIRED_PKGS} ..."
 install_prereqs
 
