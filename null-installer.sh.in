@@ -40,6 +40,33 @@ LV[root]="10G"
 LV[var]="5G"
 LV[home]="512M"
 
+PACKAGES="$(grep -h '^[^#].' /root/packages.install)"
+
+declare -a services_enable=(
+  # standard
+  acpid
+  autofs
+  sshd
+
+  # standard addons
+  socklog-unix
+  nanoklogd
+
+  # gnome stuff
+  NetworkManager
+  avahi-daemon
+  bluetoothd
+  cupsd
+  dbus
+  # gdm
+  # dcron
+  # wpa_supplicant
+)
+
+declare -a services_disable=(
+  dhcpcd
+  wpa_supplicant
+)
 
 # try xbps-install -S
 # try xbps-install -Suy xbps
@@ -246,6 +273,8 @@ createUser(){
   local usershell="/bin/bash"
   echo "Creating user account: ${user} : ${usershell}"
 
+  # TODO: username + pass validation
+
   try chroot /mnt groupadd -g 1000 ${user}
   try chroot /mnt useradd \
     -M -s "${usershell}" \
@@ -261,72 +290,15 @@ createUser(){
   echo "%wheel	ALL=(ALL)	NOPASSWD: ALL" >> /mnt/etc/sudoers
 }
 
-declare -a PACKAGES=(
-  curl
-  xterm
-  bluez
-  xorg-video-drivers
-  xorg-minimal 
-  socklog-void
-
-  openbox
-  gdm
-  gnome
-  gnome-session
-  cups
-
-  # LXDE
-  lxdm
-  lxde
-
-  arandr
-  tilix
-  firefox
-  mpv
-  noto-fonts-ttf
-  xorg-fonts
-  setxkbmap 
-  dejavu-fonts-ttf
-  font-misc-misc
-)
-
-declare -a services_enable=(
-  # standard
-  acpid
-  autofs
-  sshd
-
-  # standard addons
-  socklog-unix
-  nanoklogd
-
-  # gnome stuff
-  NetworkManager
-  avahi-daemon
-  bluetoothd
-  cupsd
-  dbus
-  # gdm
-
-  # dcron
-  
-  # wpa_supplicant 
-
-)
-
-declare -a services_disable=(
-  dhcpcd
-  wpa_supplicant
-)
-
 
 ## NOTE: NULL LiveCD
 cp -R /xbps-cachedir-x86_64 /mnt/.
 # echo 'repository=/xbps-cachedir-x86_64' > /mnt/etc/xbps.d/my-local-repo.conf
 
+#TODO: online conditional
 try printf "nameserver 8.8.4.4\nnameserver 1.1.1.1\n" > /mnt/etc/resolv.conf
 
-## TODO: make this conditional (if internet connection == True)
+#TODO: online conditional
 # try chroot /mnt xbps-install -Syu
 
 for pkg in ${PACKAGES[@]} ; do

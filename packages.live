@@ -1,0 +1,11 @@
+## packges for the LIVE USB/CD
+bash
+openbox
+xterm
+xorg
+fzf
+parted
+cryptsetup
+dialog
+lvm2
+mdadm

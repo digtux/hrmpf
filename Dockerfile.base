@@ -1,18 +1,13 @@
 FROM voidlinux/voidlinux
 
-RUN xbps-install -Syu && \
-      xbps-install -Sy \
-      bash \
-      git \
-      make
-
+ENV PACKAGES=packages.base
 WORKDIR /work
-COPY . .
-RUN make && \
-      xbps-install -Syu && \
+
+COPY ${PACKAGES} .
+RUN xbps-install -Syu && \
       xbps-install -S \
       --repository=http://alpha.de.repo.voidlinux.org/current/nonfree \
       --repository=http://alpha.de.repo.voidlinux.org/current \
       -c /work/xbps-cachedir-x86_64 \
-      $(grep -h '^[^#].' packages.base) \
+      $(grep -h '^[^#].' ${PACKAGES}) \
       -y

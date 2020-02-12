@@ -9,6 +9,6 @@
 	-s "xz -Xbcj x86" \
 	-B extra/memtest86+-5.01.iso \
 	-B extra/grub2.iso \
-	-p "$(grep -h '^[^#].' packages.install)" \
+	-p "$(grep -h '^[^#].' packages.live)" \
 	-A "gawk tnftp inetutils-hostname libressl-netcat dash git vim-common curl" \
   -o /out/something.iso

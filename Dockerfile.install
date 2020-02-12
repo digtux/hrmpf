@@ -1,5 +1,27 @@
 FROM mklive
 
 WORKDIR /work
-COPY . .
-RUN make && ./deps-install.sh
+
+
+ENV PACKAGES=packages.install
+COPY ${PACKAGES} .
+RUN xbps-install -Syu && \
+      xbps-install -S \
+      --repository=http://alpha.de.repo.voidlinux.org/current/nonfree \
+      --repository=http://alpha.de.repo.voidlinux.org/current \
+      -c /work/xbps-cachedir-x86_64 \
+      $(grep -h '^[^#].' ${PACKAGES}) \
+      --download-only -y
+
+
+# get the packages for the LIVE usb/cd
+ENV PACKAGES=packages.live
+COPY ${PACKAGES} .
+RUN xbps-install -Syu && \
+      xbps-install -S \
+      --repository=http://alpha.de.repo.voidlinux.org/current/nonfree \
+      --repository=http://alpha.de.repo.voidlinux.org/current \
+      -c /work/xbps-cachedir-x86_64 \
+      $(grep -h '^[^#].' ${PACKAGES}) \
+      --download-only -y
+

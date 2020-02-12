@@ -39,20 +39,35 @@ in theory u don't need any other image than base (or upstream `voidlinux/voidlin
 
 To test an ISO:
 1. make a pretend disk locally with slightly more than 15GB disk:
-`qemu-img create -f qcow2 disk.img 16G`
+
+```
+qemu-img create -f qcow2 disk.img 16G
+```
 
 2. test the bootcd
-`qemu-kvm -cdrom out/something.iso -smp 2 -cpu host -drive format=qcow2,file=disk.img -m 4G`
+
+```
+qemu-kvm -cdrom out/something.iso -smp 4 -cpu host -drive format=qcow2,file=disk.img -m 4G
+````
 
 
 ## quickly updating contents on CD
 
 1. docker build the `install` image to ensure all deps are in a container locally called `install`
-`docker build -f ./Dockerfile.install . -t install`
-2. copy the contents of this repo into an image called `final`
-`docker build -f ./Dockerfile.install . -t install`
+
+```
+docker build -f ./Dockerfile.install . -t install
+```
+2. copy the contents of this repo into an image called `final` (and run `make` to update the scripts)
+
+```
+docker build -f ./Dockerfile.final . -t final
+```
 3. create a new ISO using the `final` docker image (this takes about 3minutes)
-`docker run --privileged=true -v `pwd -P`/out:/out -it final ./mkhrmpf.sh`
+
+```
+docker run --privileged=true -v `pwd -P`/out:/out -it final ./mkhrmpf.sh
+```
 
 ## Tips
 

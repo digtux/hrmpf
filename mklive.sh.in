@@ -159,19 +159,23 @@ install_packages() {
         install -Dm755 /usr/sbin/void-installer $ROOTFS/usr/sbin/void-installer
     fi
 
-    rm $ROOTFS/etc/runit/runsvdir/default/dhcpd
-    ln -sf /etc/sv/NetworkManager $ROOTFS/etc/runit/runsvdir/default/
-    ln -sf /etc/sv/avahi-daemon   $ROOTFS/etc/runit/runsvdir/default/
-    ln -sf /etc/sv/bluetoothd     $ROOTFS/etc/runit/runsvdir/default/
-    ln -sf /etc/sv/cupsd          $ROOTFS/etc/runit/runsvdir/default/
-    ln -sf /etc/sv/elogind        $ROOTFS/etc/runit/runsvdir/default/
-    # ln -sf /etc/sv/gdm            $ROOTFS/etc/runit/runsvdir/default/
-	ln -sf /etc/sv/dbus           $ROOTFS/etc/runit/runsvdir/default/
-	ln -sf /etc/sv/socklog-unix   $ROOTFS/etc/runit/runsvdir/default/
-    ln -sf /etc/sv/nanoklogd      $ROOTFS/etc/runit/runsvdir/default/
+    # rm $ROOTFS/etc/runit/runsvdir/default/dhcpd
+    # ln -sf /etc/sv/NetworkManager $ROOTFS/etc/runit/runsvdir/default/
+    # ln -sf /etc/sv/avahi-daemon   $ROOTFS/etc/runit/runsvdir/default/
+    # ln -sf /etc/sv/bluetoothd     $ROOTFS/etc/runit/runsvdir/default/
+    # ln -sf /etc/sv/cupsd          $ROOTFS/etc/runit/runsvdir/default/
+    # ln -sf /etc/sv/elogind        $ROOTFS/etc/runit/runsvdir/default/
+    # # ln -sf /etc/sv/gdm            $ROOTFS/etc/runit/runsvdir/default/
+	# ln -sf /etc/sv/dbus           $ROOTFS/etc/runit/runsvdir/default/
+	# ln -sf /etc/sv/socklog-unix   $ROOTFS/etc/runit/runsvdir/default/
+    # ln -sf /etc/sv/nanoklogd      $ROOTFS/etc/runit/runsvdir/default/
 
-    cp -Rv /work/xbps-cachedir-x86_64 $ROOTFS/.
+    echo "Copying cachedir into ROOTFS"
+    cp -R /work/xbps-cachedir-x86_64 $ROOTFS/.
     echo 'repository=/xbps-cachedir-x86_64' > $ROOTFS/etc/xbps.d/my-local-repo.conf
+
+    # Install the list of packages to install (null-installer will read this)
+    cp packages.install $ROOTFS/root/.
 
     # index the downloaded packages
     chroot $ROOTFS find /xbps-cachedir-x86_64/ -type f -name "*.xbps" -exec xbps-rindex -a {} +
@@ -254,6 +258,7 @@ generate_isolinux_boot() {
 }
 
 generate_grub_efi_boot() {
+    set -x
     cp -f grub/grub.cfg $GRUB_DIR
     cp -f grub/grub_void.cfg.in $GRUB_DIR/grub_void.cfg
     sed -i  -e "s|@@SPLASHIMAGE@@|$(basename ${SPLASH_IMAGE})|" \
@@ -309,10 +314,12 @@ generate_grub_efi_boot() {
     umount "$GRUB_EFI_TMPDIR"
     losetup --detach "${LOOP_DEVICE}"
     rm -rf $GRUB_EFI_TMPDIR
+    sync ; sleep 1
 }
 
 generate_squashfs() {
     set -e
+    set -x
     umount_pseudofs
 
     # Find out required size for the rootfs and create an ext3fs image off it.
@@ -342,6 +349,7 @@ generate_squashfs() {
     # Remove rootfs and temporary dirs, we don't need them anymore.
     rm -rf "$ROOTFS" "$BUILDDIR/tmp-rootfs" "$BUILDDIR/tmp"
     set +e
+    set +x
 }
 
 generate_iso_image() {
