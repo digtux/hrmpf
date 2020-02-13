@@ -1,6 +1,7 @@
-bash
+# bash
 # dbus-elogind
-gnome
+# gnome
 # polkit-elogind
 # socklog-void
-# xorg
+xorg
+bluez

@@ -1,5 +1,12 @@
 #PER: https://github.com/void-linux/void-mklive/blob/master/build-x86-images.sh.in
 #base
+base-files
+dash
+libcap
+coreutils
+sed
+tar
+gawk
 cryptsetup
 dialog
 lvm2
